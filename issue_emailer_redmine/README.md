@@ -1,0 +1,3 @@
+# Issue Emailer Redmine Plugin
+
+This plugin adds an "Email Issue" button to the issue view page, allowing users to send email notifications manually.

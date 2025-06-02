@@ -1,0 +1,127 @@
+<style>
+  .email-card {
+    max-width: 720px;
+    margin: 40px auto;
+    padding: 25px 30px;
+    background: #fff;
+    border: 1px solid #dcdcdc;
+    border-radius: 6px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    font-family: Arial, sans-serif;
+  }
+
+  .email-card h3 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 20px;
+    color: #2e2e2e;
+  }
+
+  .email-card label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+  }
+
+  .email-card input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-family: inherit;
+  }
+
+  .preview-box {
+    background: #fafafa;
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 4px;
+    max-height: 400px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+  }
+
+  .form-footer {
+    text-align: right;
+  }
+
+  .redmine-button {
+    background: #f6f6f6;
+    border: 1px solid #ccc;
+    color: #333;
+    padding: 6px 12px 6px 30px;
+    font-size: 13px;
+    border-radius: 4px;
+    background-image: url(/images/email.png);
+    background-repeat: no-repeat;
+    background-position: 8px center;
+    background-size: 16px 16px;
+    cursor: pointer;
+  }
+
+  .redmine-button:hover {
+    background-color: #e6e6e6;
+  }
+</style>
+
+<div class="email-card">
+  <h3>Send Email About Issue #<%= @issue.id %></h3>
+
+  <%= form_tag send_email_path(@issue), method: :post, id: "issue_email_form" do %>
+    <label for="to">To (comma-separated emails):</label>
+    <%= text_field_tag :to, "", placeholder: "e.g. user@example.com, admin@site.com" %>
+    <%= hidden_field_tag :body, "", id: "email_body", name: "body" %>
+
+    <label>Email Content Preview:</label>
+    <div class="preview-box" id="preview-content">
+      <table style="width:100%; font-family: Arial, sans-serif; font-size: 14px;">
+        <tr>
+          <td style="font-size: 16px; font-weight: bold;">
+            <%= @issue.project.name %> — <%= @issue.tracker.name %> #<%= @issue.id %>
+          </td>
+        </tr>
+        <tr><td><strong>Subject:</strong> <%= @issue.subject %></td></tr>
+        <tr><td><strong>Created by:</strong> <%= @issue.author.name %></td></tr>
+        <tr><td><strong>Date:</strong> <%= format_time(@issue.created_on) %></td></tr>
+      </table>
+
+      <hr>
+
+      <h4>Description:</h4>
+      <%= textilizable(@issue, :description).html_safe %>
+
+      <% if @issue.journals.any? %>
+        <h4>Updates:</h4>
+        <% @issue.journals.each do |j| %>
+          <% next if j.notes.blank? %>
+          <div style="margin-bottom: 12px;">
+            <strong><%= j.user.name %>:</strong>
+            <%= textilizable(j, :notes).html_safe %>
+            <br><small><%= format_time(j.created_on) %></small>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+
+    <div class="form-footer">
+      <%= submit_tag "Send Email", class: "redmine-button" %>
+    </div>
+  <% end %>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const form = document.getElementById("issue_email_form");
+  const emailBody = document.getElementById("email_body");
+  const preview = document.getElementById("preview-content");
+  const submitButton = form.querySelector('input[type="submit"]');
+
+  submitButton.addEventListener("click", function (e) {
+    // Before form submission, set the body content
+    emailBody.value = preview.innerHTML;
+    console.log("✅ Email body set:", emailBody.value);
+    // Let the form submit naturally now
+  });
+});
+</script>
