@@ -116,7 +116,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const emailBody = document.getElementById("email_body");
   const preview = document.getElementById("preview-content");
   const submitButton = form.querySelector('input[type="submit"]');
-
   submitButton.addEventListener("click", function (e) {
     // Before form submission, set the body content
     emailBody.value = preview.innerHTML;
