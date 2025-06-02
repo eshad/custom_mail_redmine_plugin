@@ -91,17 +91,7 @@
       <h4>Description:</h4>
       <%= textilizable(@issue, :description).html_safe %>
 
-      <% if @issue.journals.any? %>
-        <h4>Updates:</h4>
-        <% @issue.journals.each do |j| %>
-          <% next if j.notes.blank? %>
-          <div style="margin-bottom: 12px;">
-            <strong><%= j.user.name %>:</strong>
-            <%= textilizable(j, :notes).html_safe %>
-            <br><small><%= format_time(j.created_on) %></small>
-          </div>
-        <% end %>
-      <% end %>
+
     </div>
 
     <div class="form-footer">
